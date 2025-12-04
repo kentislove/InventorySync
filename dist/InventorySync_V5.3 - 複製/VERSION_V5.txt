@@ -1,0 +1,31 @@
+Inventory Sync System V5
+========================================
+
+Version: 5.3
+Build Date: 2025/12/03 ¶g¤T 18:54:17.98
+
+New Features in V5.3:
+- Spec format normalization in database storage
+- Yahoo expired product filtering (8,795 products filtered)
+- Automatic spec extraction from product names
+- Complete Google Sheets integration
+- Dashboard web interface
+- Cross-platform inventory comparison
+
+Bug Fixes:
+- Fixed Stock_Comparison duplicate records issue
+- Ensured all spec_name values have / prefix
+
+Components:
+- ExpiredProductManager: Manages 22,050 Yahoo products
+- Updated yahoo_client.py with filtering
+- Enhanced database schema with history tables
+- Complete sync_manager with spec normalization
+- Dashboard web interface
+
+Usage:
+1. Delete old inventory.db
+2. Run InventorySync_V5.exe
+3. Open dashboard/index.html in browser
+4. View sync results and inventory data
+

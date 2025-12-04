@@ -1,0 +1,106 @@
+body {
+    font-family: monospace;
+}
+table {
+    border-collapse: collapse;
+}
+td {
+    padding: 2px 5px;
+    border: 1px solid #888;
+    font-size: 1rem;
+}
+.bg-warning {
+    background: rgb(255 204 0 / 34%);
+}
+.bg-success {
+    background: rgb(153 204 51 / 30%);
+}
+.text-success {
+    color: rgb(71, 68, 251);
+}
+.text-warning {
+    color: rgb(243, 181, 74);
+}
+button {
+    padding: 0;
+    margin-top: 2px;
+}
+.txt-sm {
+    font-size: 10px;
+    padding: 3px;
+}
+input[name="upd_qty[]"] {
+    width: 50px;
+}
+
+
+input.momo_password {
+    width: 100px;
+    color: red;
+}
+
+
+
+/** 首頁 */
+.y_tb {
+    width: 100%;
+}
+.y_tb th {
+    color: #7d2eff;
+    border: 1px solid #000;
+}
+.y_tb tr:hover td {
+    background: #dbc9f8ff;
+}
+
+.m_tb {
+    width: 100%;
+}
+.m_tb th {
+    color: rgb(242 0 202);
+    border: 1px solid #000;
+}
+.m_tb tr:hover td {
+    background: #fcd7f6;
+}
+input[name="counts[]"] {
+    width: 30px;
+}
+
+.f_part {
+    width: 100px;
+}
+.f_code {
+    width: 100px;
+}
+.f_attr2 {
+    width: 180px;
+}
+.f_qty {
+    width: 60px;
+}
+.f_op {
+    width: 80px;
+}
+
+.btn-1 {
+    text-decoration: none;
+    transition: .5s;
+    font-size: 14px;
+    color: blue;
+}
+.btn-1:hover {
+    font-size: 16px;
+    color: red;
+}
+
+
+div.log {
+    height: 155px;
+    border: 2px dashed #888;
+    padding: 3px 5px;
+    font-size: 16px;
+    overflow: hidden;
+    overflow-y: scroll;
+    resize: vertical;
+}

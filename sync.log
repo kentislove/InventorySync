@@ -1,0 +1,18 @@
+2025-11-30 18:42:34,752 - __main__ - INFO - Testing Google Sheets Connection...
+2025-11-30 18:42:36,358 - src.sheets_client - INFO - Authenticated with Google Sheets successfully.
+2025-11-30 18:42:36,359 - __main__ - INFO - Successfully connected to Sheet: Inventory_Sync_Log
+2025-11-30 18:42:37,516 - src.sheets_client - ERROR - Failed to log to Google Sheets: APIError: [400]: Invalid JSON payload received. Unknown name "timestamp" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "sku" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "platform" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "action" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "quantity_change" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "status" at 'data.values[0]': Cannot find field.
+Invalid JSON payload received. Unknown name "message" at 'data.values[0]': Cannot find field.
+2025-11-30 18:42:37,517 - __main__ - INFO - Successfully wrote test log to 'Sync_Log' worksheet.
+2025-11-30 18:43:26,226 - __main__ - INFO - Testing Google Sheets Connection...
+2025-11-30 18:43:27,858 - src.sheets_client - INFO - Authenticated with Google Sheets successfully.
+2025-11-30 18:43:27,859 - __main__ - INFO - Successfully connected to Sheet: Inventory_Sync_Log
+2025-11-30 18:43:29,332 - src.sheets_client - INFO - Sync results logged to Google Sheets.
+2025-11-30 18:43:29,334 - __main__ - INFO - Successfully wrote test log to 'Sync_Log' worksheet.
+2025-12-01 17:56:34,596 - src.main - INFO - Starting Inventory Sync System...
+2025-12-01 17:56:34,606 - src.main - CRITICAL - Critical error in main execution: expected 'except' or 'finally' block (yahoo_client.py, line 66)

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>庫存同步系統儀表板</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .status-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .refresh-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>庫存同步系統監控</h1>
+            <div id="lastSyncTime" style="color: #666; font-size: 14px; margin-left: 20px;"></div>
+            <button class="refresh-btn" onclick="loadData()">重新整理</button>
+        </div>
+
+        <div class="grid">
+            <div class="status-card">
+                <h2>同步狀態概覽</h2>
+                <canvas id="syncStatusChart"></canvas>
+            </div>
+            <div class="status-card">
+                <h2>平台庫存分佈</h2>
+                <canvas id="platformDistChart"></canvas>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2>各平台庫存比對矩陣 (Cross-Platform Inventory Matrix)</h2>
+            <div style="overflow-x: auto;">
+                <table id="matrixTable">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>品名</th>
+                            <th>規格 (Spec)</th>
+                            <th>Yahoo 庫存 (異動)</th>
+                            <th>PChome 庫存 (異動)</th>
+                            <th>MOMO 庫存 (異動)</th>
+                            <th>目標庫存 (Min)</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixBody">
+                        <tr>
+                            <td colspan="8" class="loading">載入中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2>最近同步記錄</h2>
+            <div id="tableContainer">
+                <div class="loading">載入中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // Load data from window.dashboardData (injected by data.js)
+        function loadData() {
+            try {
+                if (typeof window.dashboardData === 'undefined') {
+                    throw new Error('找不到數據 (data.js 未載入)');
+                }
+                const data = window.dashboardData;
+
+                // Update Last Sync Time
+                if (data.stats.last_sync) {
+                    document.getElementById('lastSyncTime').textContent = "最後同步時間: " + data.stats.last_sync;
+                }
+
+                updateCharts(data);
+                updateMatrix(data.comparison_matrix);
+                updateTable(data.recent_logs);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('tableContainer').innerHTML = `
+                    <p style="color: red;">無法讀取數據: ${error.message}</p>
+                    <p>請確認 Python 同步程式已執行並產生了 data.js</p>
+                `;
+            }
+        }
+
+        function updateCharts(data) {
+            // Sync Overview Chart (Downloaded vs Updated)
+            const ctx1 = document.getElementById('syncStatusChart').getContext('2d');
+
+            if (window.mySyncChart) window.mySyncChart.destroy();
+
+            const platforms = ['Yahoo', 'PChome', 'MOMO'];
+            const downloaded = [
+                data.stats.yahoo_downloaded || 0,
+                data.stats.pchome_downloaded || 0,
+                data.stats.momo_downloaded || 0
+            ];
+            const updated = [
+                data.stats.yahoo_updated || 0,
+                data.stats.pchome_updated || 0,
+                data.stats.momo_updated || 0
+            ];
+
+            window.mySyncChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: platforms,
+                    datasets: [
+                        {
+                            label: '下載庫存數 (Initial)',
+                            data: downloaded,
+                            backgroundColor: '#17a2b8'
+                        },
+                        {
+                            label: '異動更新數 (Updated)',
+                            data: updated,
+                            backgroundColor: '#ffc107'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Platform Total DB Distribution Chart
+            const ctx2 = document.getElementById('platformDistChart').getContext('2d');
+
+            if (window.myDistChart) window.myDistChart.destroy();
+
+            window.myDistChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Yahoo', 'PChome', 'MOMO'],
+                    datasets: [{
+                        label: '資料庫總量',
+                        data: [data.stats.yahoo_total_db || 0, data.stats.pchome_total_db || 0, data.stats.momo_total_db || 0],
+                        backgroundColor: ['#6f42c1', '#e83e8c', '#fd7e14']
+                    }]
+                }
+            });
+        }
+
+        function updateMatrix(matrix) {
+            if (!matrix || matrix.length === 0) {
+                document.getElementById('matrixBody').innerHTML = '<tr><td colspan="8">尚無比對資料</td></tr>';
+                return;
+            }
+
+            let html = '';
+
+            // Sort: Items with updates first
+            matrix.sort((a, b) => {
+                const aHasDelta = (a.yahoo_delta !== 0 || a.pchome_delta !== 0 || a.momo_delta !== 0);
+                const bHasDelta = (b.yahoo_delta !== 0 || b.pchome_delta !== 0 || b.momo_delta !== 0);
+                return bHasDelta - aHasDelta;
+            });
+
+            // Limit to 500 rows for performance
+            const displayLimit = 500;
+            const displayData = matrix.slice(0, displayLimit);
+
+            displayData.forEach(item => {
+                const formatCell = (qty, delta) => {
+                    if (delta !== 0) {
+                        return `${qty} <span style="color: red; font-weight: bold;">(${delta})</span>`;
+                    }
+                    return qty;
+                };
+
+                html += `
+                    <tr>
+                        <td>${item.sku}</td>
+                        <td>${item.name}</td>
+                        <td>${item.spec_name || ''}</td>
+                        <td>${formatCell(item.yahoo_qty, item.yahoo_delta)}</td>
+                        <td>${formatCell(item.pchome_qty, item.pchome_delta)}</td>
+                        <td>${formatCell(item.momo_qty, item.momo_delta)}</td>
+                        <td style="font-weight: bold;">${item.target_qty}</td>
+                        <td style="color: ${item.status === 'Updating' ? '#ffc107' : 'green'}">${item.status}</td>
+                    </tr>
+                `;
+            });
+
+            if (matrix.length > displayLimit) {
+                html += `<tr><td colspan="8" style="text-align: center; color: #666;">... 還有 ${matrix.length - displayLimit} 筆資料未顯示 (僅顯示前 ${displayLimit} 筆) ...</td></tr>`;
+            }
+
+            document.getElementById('matrixBody').innerHTML = html;
+        }
+
+        function updateTable(logs) {
+            if (!logs || logs.length === 0) {
+                document.getElementById('tableContainer').innerHTML = '<p>尚無同步記錄</p>';
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>SKU</th>
+                            <th>平台</th>
+                            <th>動作</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            logs.forEach(log => {
+                html += `
+                    <tr>
+                        <td>${log.timestamp}</td>
+                        <td>${log.sku}</td>
+                        <td>${log.platform}</td>
+                        <td>${log.action}</td>
+                        <td style="color: ${log.status === 'Success' ? 'green' : 'red'}">${log.status}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('tableContainer').innerHTML = html;
+        }
+
+        // Initial load
+        window.onload = loadData;
+    </script>
+</body>
+
+</html>

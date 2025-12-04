@@ -1,0 +1,15 @@
+2025-12-03 21:17:05,611 - __main__ - INFO - ================================================================================
+2025-12-03 21:17:05,611 - __main__ - INFO - Inventory Sync System V5 Starting...
+2025-12-03 21:17:05,611 - __main__ - INFO - ================================================================================
+2025-12-03 21:17:08,205 - src.database - INFO - Database initialized successfully.
+2025-12-03 21:17:08,241 - src.expired_product_manager - INFO - 已載入過期產品管理器:
+2025-12-03 21:17:08,241 - src.expired_product_manager - INFO -   - 已過期產品: 5282 個
+2025-12-03 21:17:08,242 - src.expired_product_manager - INFO -   - 上架中產品: 7018 個
+2025-12-03 21:17:08,243 - src.yahoo_client - INFO - Yahoo Client 初始化完成，過期產品管理器已載入
+2025-12-03 21:17:08,243 - src.pchome_client - INFO - PChome Config Keys: ['vendor_id', 'encrypt_key', 'encrypt_iv']
+2025-12-03 21:17:08,243 - src.pchome_client - INFO - PChome vendor_id: 39***79
+2025-12-03 21:17:09,636 - src.sheets_client - INFO - Authenticated with Google Sheets successfully.
+2025-12-03 21:17:09,636 - src.sync_manager_v5 - INFO - Starting sync process...
+2025-12-03 21:17:09,637 - src.sync_manager_v5 - INFO - Fetching inventory from platforms...
+2025-12-03 21:17:10,062 - src.yahoo_client - INFO - Yahoo Login successful
+2025-12-03 21:17:10,064 - src.yahoo_client - INFO - Fetching Yahoo products offset 0...

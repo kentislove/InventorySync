@@ -1,0 +1,17 @@
+Inventory Sync System V5.4
+========================================
+
+Version: 5.4
+Build Date: 2025/12/04 ¶g¥|  9:14:17.67
+
+Features:
+- Yahoo expired product filtering
+- Spec format normalization
+- Stock_Comparison correct grouping
+- PyInstaller module import fix
+
+Usage:
+1. Delete old inventory.db
+2. Run InventorySync_V5.4.exe
+3. Check Stock_Comparison results
+
